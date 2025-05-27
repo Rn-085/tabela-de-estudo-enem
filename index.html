@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tabela de Estudo ENEM Interativa</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
+    user-select: none;
+  }
+
+  #searchInput {
+    padding: 0.6rem 1.2rem;
+    margin-bottom: 1.8rem;
+    width: 320px;
+    border-radius: 30px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: box-shadow 0.3s ease;
+    user-select: none;
+  }
+  #searchInput:focus {
+    box-shadow: 0 0 14px #a0a0ff;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 95%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 9px 28px rgba(0,0,0,0.40);
+  }
+
+  thead {
+    background: linear-gradient(90deg, #8e2de2, #4a00e0);
+  }
+
+  th, td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    vertical-align: middle;
+    user-select: none;
+  }
+
+  th {
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  th:hover {
+    background: rgba(255,255,255,0.15);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.22);
+    transition: background-color 0.25s ease;
+  }
+  tbody tr:hover {
+    background-color: rgba(255,255,255,0.22);
+  }
+
+  select {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    user-select: none;
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+    background-color: white;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  select:focus {
+    box-shadow: 0 0 12px #764ba2;
+  }
+
+  .sort-indicator {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    user-select: none;
+  }
+
+  #summary {
+    margin-top: 2.5rem;
+    width: 95%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  }
+  #summary h2 {
+    margin: 0 0 0.8rem 0;
+    font-weight: 600;
+  }
+  #summary ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  #summary li {
+    padding: 0.3rem 0.1rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  #summary li:last-child {
+    border-bottom: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    tbody tr {
+      margin-bottom: 1.2rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 1rem 1rem 1.5rem;
+    }
+    tbody td {
+      padding-left: 50%;
+      position: relative;
+      text-align: right;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+    tbody td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 1.25rem;
+      width: 45%;
+      padding-left: 1rem;
+      font-weight: 600;
+      text-align: left;
+      white-space: nowrap;
+      user-select: none;
+    }
+    td select {
+      width: 100%;
+      font-size: 1rem;
+      text-align-last: center;
+      padding: 0.5rem 0;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Tabela de Estudo ENEM</h1>
+
+  <input type="text" id="searchInput" placeholder="Filtrar por matéria, disciplina ou horário..." aria-label="Filtrar por matéria, disciplina ou horário" />
+
+  <table id="studyTable" aria-describedby="Tabela para escolher matéria, disciplina e horário de estudo ENEM">
+    <thead>
+      <tr>
+        <th data-column="subject" scope="col" tabindex="0" aria-sort="none">Matéria <span class="sort-indicator"></span></th>
+        <th data-column="discipline" scope="col" tabindex="0" aria-sort="none">Disciplina <span class="sort-indicator"></span></th>
+        <th data-column="schedule" scope="col" tabindex="0" aria-sort="none">Horário <span class="sort-indicator"></span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-label="Matéria">
+          <select aria-label="Escolha Matéria">
+            <option value="">-- Selecionar --</option>
+            <option value="Linguagens, Códigos e suas Tecnologias">Linguagens, Códigos e suas Tecnologias</option>
+            <option value="Matemática e suas Tecnologias">Matemática e suas Tecnologias</option>
+            <option value="Ciências da Natureza e suas Tecnologias">Ciências da Natureza e suas Tecnologias</option>
+            <option value="Ciências Humanas e suas Tecnologias">Ciências Humanas e suas Tecnologias</option>
+          </select>
+        </td>
+        <td data-label="Disciplina">
+          <select aria-label="Escolha Disciplina">
+            <option value="">-- Selecionar --</option>
+            <option value="Português">Português</option>
+            <option value="Inglês">Inglês</option>
+            <option value="Artes">Artes</option>
+            <option value="Matemática">Matemática</option>
+            <option value="Física">Física</option>
+            <option value="Química">Química</option>
+            <option value="Biologia">Biologia</option>
+            <option value="História">História</option>
+            <option value="Geografia">Geografia</option>
+            <option value="Filosofia">Filosofia</option>
+            <option value="Sociologia">Sociologia</option>
+          </select>
+        </td>
+        <td data-label="Horário">
+          <select aria-label="Escolha Horário">
+            <option value="">-- Selecionar --</option>
+            <option value="06:00-07:00">06:00 - 07:00</option>
+            <option value="07:30-08:30">07:30 - 08:30</option>
+            <option value="12:00-13:00">12:00 - 13:00</option>
+            <option value="18:00-19:00">18:00 - 19:00</option>
+            <option value="20:00-21:00">20:00 - 21:00</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button id="addRowBtn" style="
+    margin-top: 1.25rem;
+    background: #8e2de2;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(142,45,226,0.6);
+    transition: background 0.3s ease;
+    user-select: none;
+  ">Adicionar Linha</button>
+
+  <section id="summary" aria-live="polite" aria-atomic="true" aria-label="Resumo dos estudos cadastrados" style="width: 95%; max-width: 900px; margin-top: 3rem; background: rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 1rem 1.5rem; box-shadow: 0 5px 20px rgba(0,0,0,0.3);">
+    <h2>Resumo dos Estudos</h2>
+    <p id="noSelectionMsg">Nenhum estudo cadastrado.</p>
+    <ul id="selectionList" hidden style="list-style:none; padding-left:0; margin:0; max-height: 240px; overflow-y:auto;"></ul>
+  </section>
+
+<script>
+  (function(){
+    const table = document.getElementById('studyTable');
+    const tbody = table.querySelector('tbody');
+    const addRowBtn = document.getElementById('addRowBtn');
+    const summaryList = document.getElementById('selectionList');
+    const noSelectionMsg = document.getElementById('noSelectionMsg');
+    const searchInput = document.getElementById('searchInput');
+    const headers = table.querySelectorAll('th');
+    let sortDirection = Array(headers.length).fill(null);
+
+    // Update summary list
+    function updateSummary() {
+      const rows = tbody.querySelectorAll('tr');
+      let studies = [];
+      rows.forEach(tr => {
+        const selects = tr.querySelectorAll('select');
+        const mat = selects[0].value.trim();
+        const disc = selects[1].value.trim();
+        const hor = selects[2].value.trim();
+        if(mat && disc && hor) {
+          studies.push({mat, disc, hor});
+        }
+      });
+      summaryList.innerHTML = '';
+      if(studies.length === 0) {
+        noSelectionMsg.style.display = 'block';
+        summaryList.hidden = true;
+      } else {
+        noSelectionMsg.style.display = 'none';
+        summaryList.hidden = false;
+        studies.forEach(study => {
+          const li = document.createElement('li');
+          li.textContent = `${study.mat} - ${study.disc}: ${study.hor}`;
+          summaryList.appendChild(li);
+        });
+      }
+    }
+
+    // Add event listeners to selects for update summary & filtering
+    function addSelectListeners(row) {
+      const selects = row.querySelectorAll('select');
+      selects.forEach(sel => {
+        sel.addEventListener('change', () => {
+          updateSummary();
+          filterTable();
+        });
+      });
+    }
+
+    // Add select listeners to initial row
+    addSelectListeners(tbody.querySelector('tr'));
+
+    // Add new row on button click
+    addRowBtn.addEventListener('click', () => {
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td data-label="Matéria">
+          <select aria-label="Escolha Matéria">
+            <option value="">-- Selecionar --</option>
+            <option value="Linguagens, Códigos e suas Tecnologias">Linguagens, Códigos e suas Tecnologias</option>
+            <option value="Matemática e suas Tecnologias">Matemática e suas Tecnologias</option>
+            <option value="Ciências da Natureza e suas Tecnologias">Ciências da Natureza e suas Tecnologias</option>
+            <option value="Ciências Humanas e suas Tecnologias">Ciências Humanas e suas Tecnologias</option>
+          </select>
+        </td>
+        <td data-label="Disciplina">
+          <select aria-label="Escolha Disciplina">
+            <option value="">-- Selecionar --</option>
+            <option value="Português">Português</option>
+            <option value="Inglês">Inglês</option>
+            <option value="Artes">Artes</option>
+            <option value="Matemática">Matemática</option>
+            <option value="Física">Física</option>
+            <option value="Química">Química</option>
+            <option value="Biologia">Biologia</option>
+            <option value="História">História</option>
+            <option value="Geografia">Geografia</option>
+            <option value="Filosofia">Filosofia</option>
+            <option value="Sociologia">Sociologia</option>
+          </select>
+        </td>
+        <td data-label="Horário">
+          <select aria-label="Escolha Horário">
+            <option value="">-- Selecionar --</option>
+            <option value="06:00-07:00">06:00 - 07:00</option>
+            <option value="07:30-08:30">07:30 - 08:30</option>
+            <option value="12:00-13:00">12:00 - 13:00</option>
+            <option value="18:00-19:00">18:00 - 19:00</option>
+            <option value="20:00-21:00">20:00 - 21:00</option>
+          </select>
+        </td>
+      `;
+      tbody.appendChild(newRow);
+      addSelectListeners(newRow);
+      updateSummary();
+    });
+
+    // Filtering table rows by input text in any selected field
+    function filterTable() {
+      const filter = searchInput.value.toLowerCase();
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach(row => {
+        const selects = row.querySelectorAll('select');
+        const values = Array.from(selects).map(sel => sel.value.toLowerCase());
+        if(values.some(val => val.includes(filter))) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+    searchInput.addEventListener('input', filterTable);
+
+    // Sorting table by Matéria and Disciplina columns
+    const getSelectValue = (row, idx) => {
+      const select = row.children[idx].querySelector('select');
+      return select ? select.value.toLowerCase() : '';
+    };
+    const comparer = (idx, asc) => (a, b) => {
+      const valA = getSelectValue(a, idx);
+      const valB = getSelectValue(b, idx);
+      return (valA.localeCompare(valB)) * (asc ? 1 : -1);
+    };
+
+    headers.forEach((th, i) => {
+      if(i < 2) {
+        th.addEventListener('click', () => {
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          const asc = sortDirection[i] !== true;
+          rows.sort(comparer(i, asc));
+          rows.forEach(row => tbody.appendChild(row));
+          headers.forEach((header, idx) => {
+            header.setAttribute('aria-sort', 'none');
+            header.querySelector('.sort-indicator').textContent = '';
+            sortDirection[idx] = null;
+          });
+          th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+          th.querySelector('.sort-indicator').textContent = asc ? '▲' : '▼';
+          sortDirection[i] = asc;
+        });
+        th.addEventListener('keyup', e => {
+          if(e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            th.click();
+          }
+        });
+      }
+    });
+
+    // Initial update to summary
+    updateSummary();
+
+  })();
+</script>
+
+</body>
+</html>
+
